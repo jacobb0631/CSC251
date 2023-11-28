@@ -1,48 +1,57 @@
+import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 public class Demo {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        try {
+            Scanner fileScanner = new Scanner(new File("PolicyInformation.txt"));
+            ArrayList<Policy> policies = new ArrayList<>();
+            int smokerCount = 0;
+            int nonSmokerCount = 0;
 
-        System.out.print("Please enter the Policy Number: ");
-        int policyNumber = scanner.nextInt();
+            while (fileScanner.hasNextLine()) {
+                String policyNumberStr = getNextNonEmptyLine(fileScanner);
+                if (policyNumberStr == null) break;
 
-        scanner.nextLine();
+                int policyNumber = Integer.parseInt(policyNumberStr);
+                String providerName = getNextNonEmptyLine(fileScanner);
+                String firstName = getNextNonEmptyLine(fileScanner);
+                String lastName = getNextNonEmptyLine(fileScanner);
+                int age = Integer.parseInt(getNextNonEmptyLine(fileScanner));
+                String smokingStatus = getNextNonEmptyLine(fileScanner);
+                double height = Double.parseDouble(getNextNonEmptyLine(fileScanner));
+                double weight = Double.parseDouble(getNextNonEmptyLine(fileScanner));
 
-        System.out.print("Please enter the Provider Name: ");
-        String providerName = scanner.nextLine();
+                PolicyHolder policyHolder = new PolicyHolder(firstName, lastName, age, smokingStatus, height, weight);
+                if ("smoker".equalsIgnoreCase(smokingStatus)) {
+                    smokerCount++;
+                } else {
+                    nonSmokerCount++;
+                }
 
-        System.out.print("Please enter the Policyholder's First Name: ");
-        String firstName = scanner.nextLine();
+                Policy policy = new Policy(policyNumber, providerName, policyHolder);
+                policies.add(policy);
 
-        System.out.print("Please enter the Policyholder's Last Name: ");
-        String lastName = scanner.nextLine();
+                System.out.println(policy);
+            }
+            
+            System.out.println("There were " + Policy.getPolicyCount() + " Policy objects created.");
+            System.out.println("\nThe number of policies with a smoker is: " + smokerCount);
+            System.out.println("The number of policies with a non-smoker is: " + nonSmokerCount);
 
-        System.out.print("Please enter the Policyholder's Age: ");
-        int age = scanner.nextInt();
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found: " + e.getMessage());
+        }
+    }
 
-        scanner.nextLine();
-
-        System.out.print("Please enter the Policyholder's Smoking Status (smoker/non-smoker): ");
-        String smokingStatus = scanner.nextLine();
-
-        System.out.print("Please enter the Policyholder's Height (in inches): ");
-        double height = scanner.nextDouble();
-
-        System.out.print("Please enter the Policyholder's Weight (in pounds): ");
-        double weight = scanner.nextDouble();
-
-        Policy policy = new Policy(policyNumber, providerName, firstName, lastName, age, smokingStatus, height, weight);
-
-        System.out.println("\nPolicy Number: " + policy.getPolicyNumber());
-        System.out.println("Provider Name: " + policy.getProviderName());
-        System.out.println("Policyholder's First Name: " + policy.getFirstName());
-        System.out.println("Policyholder's Last Name: " + policy.getLastName());
-        System.out.println("Policyholder's Age: " + policy.getAge());
-        System.out.println("Policyholder's Smoking Status: " + policy.getSmokingStatus());
-        System.out.printf("Policyholder's Height: %.2f inches\n", policy.getHeight());
-        System.out.printf("Policyholder's Weight: %.2f pounds\n", policy.getWeight());
-        System.out.printf("Policyholder's BMI: %.2f\n", policy.calculateBMI());
-        System.out.printf("Policy Price: $%.2f\n", policy.calculatePrice());
+    private static String getNextNonEmptyLine(Scanner scanner) {
+        String line;
+        do {
+            if (!scanner.hasNextLine()) return null;
+            line = scanner.nextLine().trim();
+        } while (line.isEmpty());
+        return line;
     }
 }

@@ -1,15 +1,14 @@
 public class Policy {
+    private static int policyCount = 0;
     private int policyNumber;
     private String providerName;
+    private PolicyHolder policyHolder;
 
-    public Policy() {
-        this.policyNumber = 0;
-        this.providerName = "";
-    }
-
-    public Policy(int policyNumber, String providerName) {
+    public Policy(int policyNumber, String providerName, PolicyHolder policyHolder) {
         this.policyNumber = policyNumber;
         this.providerName = providerName;
+        this.policyHolder = policyHolder;
+        policyCount++;
     }
 
     public void setPolicyNumber(int policyNumber) {
@@ -41,5 +40,21 @@ public class Policy {
             price += (bmi - 35) * 20;
         }
         return price;
+    }
+
+    public static int getPolicyCount() {
+        return policyCount;
+    }
+
+    public PolicyHolder getPolicyHolder() {
+        return policyHolder;
+    }
+
+    @Override
+    public String toString() {
+        return "Policy Number: " + policyNumber +
+               "\nProvider Name: " + providerName +
+               "\n" + policyHolder.toString() +
+               String.format("\nPolicy Price: $%.2f\n", calculatePrice(policyHolder));
     }
 }
